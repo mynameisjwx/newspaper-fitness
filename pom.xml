@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<!--hzero-parent dependency-->
+	<parent>
+		<groupId>org.hzero</groupId>
+		<artifactId>hzero-parent</artifactId>
+		<version>0.8.0.RELEASE</version>
+	</parent>
+	<groupId>com.hand6.health</groupId>
+	<artifactId>newspaper-fitness</artifactId>
+	<version>0.0.1-SNAPSHOT</version>
+	<name>newspaper-fitness</name>
+	<description>上海六组每周记录</description>
+
+	<properties>
+		<java.version>1.8</java.version>
+	</properties>
+
+	<dependencies>
+		<!--spring boot-->
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-undertow</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-test</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-web</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-web</artifactId>
+			<exclusions>
+				<exclusion>
+					<groupId>org.springframework.boot</groupId>
+					<artifactId>spring-boot-starter-tomcat</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-actuator</artifactId>
+		</dependency>
+
+		<!--spring cloud-->
+		<dependency>
+			<groupId>org.springframework.cloud</groupId>
+			<artifactId>spring-cloud-starter-eureka</artifactId>
+		</dependency>
+
+		<!--hzero-->
+		<dependency>
+			<groupId>org.hzero.starter</groupId>
+			<artifactId>hzero-starter-core</artifactId>
+		</dependency>
+
+		<!--choerodon-->
+		<dependency>
+			<groupId>io.choerodon</groupId>
+			<artifactId>choerodon-starter-oauth-resource</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>io.choerodon</groupId>
+			<artifactId>choerodon-starter-swagger</artifactId>
+		</dependency>
+
+		<!--mysql-->
+		<dependency>
+			<groupId>org.hzero.starter</groupId>
+			<artifactId>hzero-starter-mybatis-mapper</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>mysql</groupId>
+			<artifactId>mysql-connector-java</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>org.projectlombok</groupId>
+			<artifactId>lombok</artifactId>
+		</dependency>
+		<!--<dependency>-->
+			<!--<groupId>org.hzero</groupId>-->
+			<!--<artifactId>hzero-swagger</artifactId>-->
+		<!--</dependency>-->
+		<!--<dependency>-->
+			<!--<groupId>org.hzero</groupId>-->
+			<!--<artifactId>hzero-portal</artifactId>-->
+			<!--<version>${hzero.service.version}</version>-->
+		<!--</dependency>-->
+		<!--<dependency>-->
+			<!--<groupId>org.hzero</groupId>-->
+			<!--<artifactId>hzero-oauth</artifactId>-->
+			<!--<version>${hzero.service.version}</version>-->
+		<!--</dependency>-->
+	</dependencies>
+
+	<repositories>
+		<repository>
+			<id>HzeroRelease</id>
+			<name>Hzero-Release Repository</name>
+			<url>http://nexus.saas.hand-china.com/content/repositories/Hzero-Release/</url>
+			<snapshots>
+				<enabled>false</enabled>
+			</snapshots>
+		</repository>
+		<repository>
+			<id>HzeroSnapshot</id>
+			<name>Hzero-Snapshot Repository</name>
+			<url>http://nexus.saas.hand-china.com/content/repositories/Hzero-Snapshot/</url>
+			<snapshots>
+				<enabled>true</enabled>
+			</snapshots>
+		</repository>
+	</repositories>
+
+</project>

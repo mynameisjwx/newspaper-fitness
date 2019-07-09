@@ -1,0 +1,23 @@
+server:
+  port: 8088
+spring:
+  application:
+    name: hzero-todo-service
+  profiles:
+    active: ${SPRING_PROFILES_ACTIVE:dev}
+  cloud:
+    config:
+      failFast: true
+      retry:
+        maxAttempts: 6
+        multiplier: 1.5
+        maxInterval: 2000
+      uri: dev.hzero.org:8010
+      enabled: false
+management:
+  port: 8089
+  security:
+    enabled: false
+security:
+  basic:
+    enabled: false
