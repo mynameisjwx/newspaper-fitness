@@ -1,4 +1,25 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="com.hand6.health.infra.mapper.MotionRecordsMapper">
+    <select id="findAll" resultType="com.hand6.health.domain.entity.MotionRecords">
+        SELECT * FROM motion_records mr
+        <trim prefix="where" prefixOverrides="AND |OR">
+            <if test="record.handUserId!=null and record.handUserId!=''">
+                AND mr.hand_user_id = #{record.handUserId}
+            </if>
+            <if test="record.gender!=null and record.gender!=''">
+                AND mr.gender = #{record.gender}
+            </if>
+            <if test="record.status!=null and record.status!=''">
+                AND mr.status = #{record.status}
+            </if>
+            <if test="record.startDate!=null">
+                 AND mr.motion_time &gt;= #{record.startDate,jdbcType=DATE}
+            </if>
+            <if test="record.endDate!=null">
+               AND mr.motion_time &lt;= #{record.endDate,jdbcType=DATE}
+            </if>
+            order by mr.motion_time
+        </trim>
+    </select>
 </mapper>

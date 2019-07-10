@@ -47,4 +47,11 @@ public class MotionRecords extends AuditDomain {
     private Date motionTime;//运动时间
     private String imgUrl;
     private String status;//是否达标
+
+    @Transient
+    @DateTimeFormat(pattern = "YYYY-MM-DD hh:mm:ss")
+    private Date startDate; //每周开始时间
+    @Transient
+    @DateTimeFormat(pattern = "YYYY-MM-DD hh:mm:ss")
+    private Date endDate; //每周结束时间
 }
