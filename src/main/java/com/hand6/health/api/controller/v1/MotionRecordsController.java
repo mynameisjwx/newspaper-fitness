@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 
 /**
@@ -25,14 +26,20 @@ public class MotionRecordsController {
 
     @PostMapping()
     @ApiOperation("新增跑步记录")
-    public ResponseEntity<MotionRecords> add(@RequestBody MotionRecords motionRecords){
-        return Results.success(motionRecordsService.save(motionRecords));
+    public ResponseEntity<MotionRecords> add(HttpServletRequest httpServletRequest){
+        return Results.success(motionRecordsService.save(httpServletRequest));
     }
 
     @PutMapping()
     @ApiOperation("更新跑步记录")
     public ResponseEntity<MotionRecords> update(@RequestBody MotionRecords motionRecords){
         return Results.success(motionRecordsService.update(motionRecords));
+    }
+
+    @PutMapping("/disabled/{id}")
+    @ApiOperation("失效跑步记录")
+    public ResponseEntity<MotionRecords> disabled(@PathVariable Long id){
+        return Results.success(motionRecordsService.disabled(id));
     }
 
     @DeleteMapping()

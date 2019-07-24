@@ -29,4 +29,5 @@ public class ConstantUtil {
     public static final String FILE_CLEAN="FILE_CLEAN";//运动统计
 
     public static final BigDecimal ZERO=new BigDecimal(0);
+    public static final BigDecimal TIME_CONVERSION=new BigDecimal(60);
 }

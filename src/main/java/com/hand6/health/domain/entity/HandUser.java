@@ -37,4 +37,7 @@ public class HandUser extends AuditDomain{
     private String gender;
     private String fullName;
     private String wechatNumber;
+    public String getUserNumber(){
+        return this.getUserNumber();
+    }
 }

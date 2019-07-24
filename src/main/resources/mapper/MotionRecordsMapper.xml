@@ -14,10 +14,10 @@
                 AND mr.status = #{record.status}
             </if>
             <if test="record.startDate!=null">
-                 AND mr.motion_time &gt;= #{record.startDate,jdbcType=DATE}
+                 AND DATE(mr.motion_time) &gt;= #{record.startDate,jdbcType=DATE}
             </if>
             <if test="record.endDate!=null">
-               AND mr.motion_time &lt;= #{record.endDate,jdbcType=DATE}
+               AND DATE(mr.motion_time) &lt;= #{record.endDate,jdbcType=DATE}
             </if>
             order by mr.motion_time
         </trim>

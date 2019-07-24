@@ -33,17 +33,18 @@ import java.util.List;
  * @author xxxx
  * @description 运动统计定时任务
  * @date 2019/7/9
- */
+// */
 @Component
 @Configuration //用于标记配置类，兼备component
 @EnableScheduling //开启定时任务
 public class MotionSummaryTask implements SchedulingConfigurer {
     @Mapper
-    public interface CronMapper{
+    public interface CronMapper {
         @Select("select t.cron from corn t where purpose ='" + ConstantUtil.MOTION_SUMMARY + "' limit 1")
         public String getCron();
     }
-    public void print(){
+
+    public void print() {
         System.out.println("执行动态定时任务: " + LocalDateTime.now().toLocalTime());
     }
 
@@ -60,100 +61,120 @@ public class MotionSummaryTask implements SchedulingConfigurer {
     @Autowired
     private MotionSummaryMapper summaryMapper;
 
-    public void vaildRecord(MotionRecords motionRecords){
-
+    public Boolean vaildRecord(BigDecimal t,BigDecimal runDistance,BigDecimal indicators) {
+        Boolean result =false;
+        if (t.compareTo(ConstantUtil.ZERO) != 0) {
+            t = runDistance.multiply(new BigDecimal(2)).add(t);
+            if (t.compareTo(indicators) != -1) {
+                result = true;
+            } else {
+                result = false;
+            }
+        }
+        return result;
     }
 
-    public void motionSummary(){
+    public void motionSummary() {
         System.out.println("执行动态定时任务: " + LocalDateTime.now().toLocalTime());
         List<HandUser> userList = handUserMapper.selectAll();
         BigDecimal runDistance = null;
         BigDecimal walkDistance = null;
         BigDecimal rideDistance = null;
         BigDecimal otherDistance = null;
-        BigDecimal allDistance=null;
-        MotionSummary motionSummary=null;
-        Boolean runIsAchieve=false;
-        Boolean walkIsAchieve=false;
-        Boolean rideIsAchieve=false;
-        Boolean otherIsAchieve=false;
-        for (HandUser user:userList){
+        BigDecimal runTime = null;
+        BigDecimal walkTime = null;
+        BigDecimal rideTime = null;
+        BigDecimal otherTime = null;
+        MotionSummary motionSummary = null;
+        Boolean runIsAchieve = false;
+        Boolean walkIsAchieve = false;
+        Boolean rideIsAchieve = false;
+        Boolean otherIsAchieve = false;
+        for (HandUser user : userList) {
             runDistance = new BigDecimal(0);
+            runTime = new BigDecimal(0);
             walkDistance = new BigDecimal(0);
+            walkTime = new BigDecimal(0);
             rideDistance = new BigDecimal(0);
+            rideTime = new BigDecimal(0);
             otherDistance = new BigDecimal(0);
-            allDistance = new BigDecimal(0);
+            otherTime = new BigDecimal(0);
             motionSummary = new MotionSummary();
             motionSummary.setHandUserId(user.getId());
             motionSummary.setGender(user.getGender());
             motionSummary.setHandFullName(user.getFullName());
+            motionSummary.setHandUserNumber(user.getUserNumber());
             List<MotionRecords> recordsList = motionRecordsMapper.findAll(MotionRecords.builder().handUserId(user.getId())
-            .status(ConstantUtil.ACHIEVE).gender(user.getGender()).startDate(DateUtil.getMondayOfThisWeek(new Date()))
-                    .endDate(DateUtil.getSundayOfThisWeek(new Date())).build());
+                    .status(ConstantUtil.ACHIEVE).gender(user.getGender()).startDate(DateUtil.getPastDate(7))
+                    .endDate(DateUtil.date2Str(new Date(), DateUtil.yyyyMMdd)).build());
 
             MotionIndicators runIndicators = motionIndicatorsMapper.selectOne(MotionIndicators.builder()
-            .motionType(ConstantUtil.RUN).gender(user.getGender()).build());
+                    .motionType(ConstantUtil.RUN).gender(user.getGender()).build());
             MotionIndicators walkIndicators = motionIndicatorsMapper.selectOne(MotionIndicators.builder()
                     .motionType(ConstantUtil.WALK).gender(user.getGender()).build());
             MotionIndicators rideIndicators = motionIndicatorsMapper.selectOne(MotionIndicators.builder()
                     .motionType(ConstantUtil.RIDE).gender(user.getGender()).build());
             MotionIndicators otherIndicators = motionIndicatorsMapper.selectOne(MotionIndicators.builder()
                     .motionType(ConstantUtil.OTHER).gender(user.getGender()).build());
-            if (!ObjectUtils.isEmpty(recordsList)){
+            if (!ObjectUtils.isEmpty(recordsList)) {
                 //校验
-                for (MotionRecords records:recordsList){
-                    switch (records.getMotionType()){
-                        case ConstantUtil.RUN: runDistance=runDistance.add(records.getMotionDistance()); break;
-                        case ConstantUtil.RIDE: rideDistance=rideDistance.add(records.getMotionDistance()); break;
-                        case ConstantUtil.WALK: walkDistance=walkDistance.add(records.getMotionDistance()); break;
-                        case ConstantUtil.OTHER: otherDistance=walkDistance.add(records.getMotionDistance()); break;
-                        default: break;
+                for (MotionRecords records : recordsList) {
+                    switch (records.getMotionType()) {
+                        case ConstantUtil.RUN:
+                            runDistance = runDistance.add(records.getMotionDistance());
+                            runTime = runTime.add(DateUtil.StringToSecond(records.getMotionSpeed()));
+                            break;
+                        case ConstantUtil.RIDE:
+                            rideDistance = rideDistance.add(records.getMotionDistance());
+                            rideTime = rideTime.add(DateUtil.StringToSecond(records.getMotionSpeed()));
+                            break;
+                        case ConstantUtil.WALK:
+                            walkDistance = walkDistance.add(records.getMotionDistance());
+                            walkTime = walkTime.add(DateUtil.StringToSecond(records.getMotionSpeed()));
+                            break;
+                        case ConstantUtil.OTHER:
+                            otherDistance = walkDistance.add(records.getMotionDistance());
+                            otherTime = otherTime.add(DateUtil.StringToSecond(records.getMotionSpeed()));
+                            break;
+                        default:
+                            break;
                     }
                 }
-                motionSummary.setRunDistance(runDistance);
-                motionSummary.setRideDistance(rideDistance);
-                motionSummary.setWalkDistance(walkDistance);
-                motionSummary.setOtherDistince(otherDistance);
-            }
-            if (runDistance.compareTo(runIndicators.getTotalDistance())==-1){
-                if (walkDistance.compareTo(ConstantUtil.ZERO)!=0){
-                    walkDistance = runDistance.multiply(new BigDecimal(2)).add(walkDistance);
-                    if (walkDistance.compareTo(walkIndicators.getTotalDistance())!=-1){
-                        walkIsAchieve = true;
-                    } else {
-                        walkIsAchieve = false;
-                    }
+                motionSummary.setRunDistance(runDistance.compareTo(ConstantUtil.ZERO)==0?null:runDistance);
+                if (runDistance.compareTo(ConstantUtil.ZERO) != 0) {
+                    motionSummary.setRunAvgSpeed(DateUtil.Second2String(runTime.divide(runDistance, 0, BigDecimal.ROUND_HALF_UP)));
                 }
-                if (rideDistance.compareTo(ConstantUtil.ZERO) != 0){
-                    rideDistance = runDistance.multiply(new BigDecimal(2)).add(rideDistance);
-                    if (rideDistance.compareTo(rideIndicators.getTotalDistance())!=-1){
-                        rideIsAchieve = true;
-                    } else {
-                        rideIsAchieve = false;
-                    }
+                motionSummary.setRideDistance(rideDistance.compareTo(ConstantUtil.ZERO)==0?null:rideDistance);
+                if (rideDistance.compareTo(ConstantUtil.ZERO) != 0) {
+                    motionSummary.setRideAvgSpeed(DateUtil.Second2String(rideTime.divide(rideDistance, 0, BigDecimal.ROUND_HALF_UP)));
                 }
-                if (otherDistance.compareTo(ConstantUtil.ZERO) != 0){
-                    otherDistance = runDistance.multiply(new BigDecimal(2)).add(otherDistance);
-                    if (otherDistance.compareTo(otherIndicators.getTotalDistance())!=-1){
-                        rideIsAchieve = true;
-                    } else {
-                        rideIsAchieve = false;
-                    }
+                motionSummary.setWalkDistance(walkDistance.compareTo(ConstantUtil.ZERO)==0?null:walkDistance);
+                if (walkDistance.compareTo(ConstantUtil.ZERO) != 0) {
+                    motionSummary.setWalkAvgSpeed(DateUtil.Second2String(walkTime.divide(walkDistance, 0, BigDecimal.ROUND_HALF_UP)));
                 }
+                motionSummary.setOtherDistince(otherDistance.compareTo(ConstantUtil.ZERO)==0?null:otherDistance);
+                if (otherDistance.compareTo(ConstantUtil.ZERO) != 0) {
+                    motionSummary.setOtherAvgSpeed(DateUtil.Second2String(otherTime.divide(otherDistance, 0, BigDecimal.ROUND_HALF_UP)));
 
+                }
+            }
+            if (runDistance.compareTo(runIndicators.getTotalDistance()) == -1) {
+                walkIsAchieve = vaildRecord(walkDistance,runDistance,walkIndicators.getTotalDistance());
+                rideIsAchieve = vaildRecord(rideDistance,runDistance,rideIndicators.getTotalDistance());
+                otherIsAchieve = vaildRecord(otherDistance,runDistance,otherIndicators.getTotalDistance());
+                runIsAchieve = false;
             } else {
                 runIsAchieve = true;
             }
-            if (runIsAchieve||rideIsAchieve||walkIsAchieve||otherIsAchieve){
+            if (runIsAchieve || rideIsAchieve || walkIsAchieve || otherIsAchieve) {
                 motionSummary.setStatus(ConstantUtil.ACHIEVE);
-            }else {
+            } else {
                 motionSummary.setStatus(ConstantUtil.NOT_ACHIEVE);
             }
             motionSummary.setActionTime(new Date());
             summaryMapper.insert(motionSummary);
         }
     }
-
 
 
     @Override

@@ -11,6 +11,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
@@ -49,9 +50,9 @@ public class MotionRecords extends AuditDomain {
     private String status;//是否达标
 
     @Transient
-    @DateTimeFormat(pattern = "YYYY-MM-DD hh:mm:ss")
-    private Date startDate; //每周开始时间
+    private MultipartFile[] files;
     @Transient
-    @DateTimeFormat(pattern = "YYYY-MM-DD hh:mm:ss")
-    private Date endDate; //每周结束时间
+    private String startDate; //每周开始时间
+    @Transient
+    private String endDate; //每周结束时间
 }

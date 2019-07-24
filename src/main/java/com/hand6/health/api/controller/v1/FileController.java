@@ -10,5 +10,5 @@ import org.springframework.stereotype.Controller;
  * @date 2019/7/8
  */
 @Controller
-public class UploadController {
+public class FileController {
 }

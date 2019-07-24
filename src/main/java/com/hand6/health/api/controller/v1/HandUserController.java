@@ -32,9 +32,7 @@ public class HandUserController {
     @PostMapping()
     @ApiOperation(value = "创建hand用户")
     public ResponseEntity<HandUser> save(@RequestBody HandUser handUser) {
-
         return Results.success(handuserService.save(handUser));
-
     }
 
     @GetMapping()

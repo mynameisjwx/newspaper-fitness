@@ -26,4 +26,9 @@ databaseChangeLog(logicalFilePath: 'motion_summary.groovy') {
             column(name: "LAST_UPDATE_DATE", type: "DATETIME", defaultValueComputed : "CURRENT_TIMESTAMP")
         }
     }
+    changeSet(id: '20190711',author: '19531'){
+        addColumn(tableName: 'motion_summary'){
+            column(name: 'hand_user_number',type: 'VARCHAR(40)',remarks: '员工编号',afterColumn:'hand_user_id')
+        }
+    }
 }

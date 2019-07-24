@@ -11,4 +11,5 @@ import java.util.List;
  * Created by Administrator on 2019/7/6.
  */
 public interface MotionSummaryMapper extends BaseMapper<MotionSummary> {
+    List<MotionSummary> findAll(@Param("motionSummary") MotionSummary motionSummary);
 }
